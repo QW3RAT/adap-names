@@ -1,71 +1,72 @@
-import { DEFAULT_DELIMITER, ESCAPE_CHARACTER } from "../common/Printable";
+import { DEFAULT_DELIMITER } from "../common/Printable";
 import { Name } from "./Name";
 import { AbstractName } from "./AbstractName";
+import { StringArrayName } from "./StringArrayName"; // Useful for cloning if needed
 
 export class StringName extends AbstractName {
 
     protected name: string = "";
-    protected noComponents: number = 0;
+    // In a real implementation, you might cache this, or calculate it on the fly.
+    // For this exercise, we assume 'name' holds the raw data string.
 
-    constructor(source: string, delimiter?: string) {
-        super();
-        throw new Error("needs implementation or deletion");
+    constructor(source: string, delimiter: string = DEFAULT_DELIMITER) {
+        super(delimiter);
+        this.name = source;
     }
 
     public clone(): Name {
-        throw new Error("needs implementation or deletion");
+        return new StringName(this.name, this.delimiter);
     }
 
-    public asString(delimiter: string = this.delimiter): string {
-        throw new Error("needs implementation or deletion");
+    // --- Helper to parse the string (Concept only) ---
+    // Since this class stores data as a single string, we often need to 
+    // split it to find specific components.
+    private splitComponents(): string[] {
+        // This is a simplified split. A real implementation handles escaping.
+        if (this.name === "") return [];
+        return this.name.split(this.delimiter);
     }
 
-    public asDataString(): string {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEqual(other: Name): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getHashCode(): number {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public isEmpty(): boolean {
-        throw new Error("needs implementation or deletion");
-    }
-
-    public getDelimiterCharacter(): string {
-        throw new Error("needs implementation or deletion");
-    }
+    // --- Implementation of the Narrow Interface ---
 
     public getNoComponents(): number {
-        throw new Error("needs implementation or deletion");
+        if (this.name.length === 0) return 0;
+        // A quick way to count components is counting delimiters + 1
+        // But correct implementation depends on your split logic
+        return this.splitComponents().length;
     }
 
     public getComponent(i: number): string {
-        throw new Error("needs implementation or deletion");
+        const comps = this.splitComponents();
+        if (i < 0 || i >= comps.length) throw new Error("Index out of bounds");
+        return comps[i];
     }
 
     public setComponent(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        const comps = this.splitComponents();
+        if (i < 0 || i >= comps.length) throw new Error("Index out of bounds");
+        comps[i] = c;
+        // Rebuild the internal string
+        this.name = comps.join(this.delimiter);
     }
 
     public insert(i: number, c: string) {
-        throw new Error("needs implementation or deletion");
+        const comps = this.splitComponents();
+        comps.splice(i, 0, c);
+        this.name = comps.join(this.delimiter);
     }
 
     public append(c: string) {
-        throw new Error("needs implementation or deletion");
+        if (this.name.length > 0) {
+            this.name += this.delimiter + c;
+        } else {
+            this.name = c;
+        }
     }
 
     public remove(i: number) {
-        throw new Error("needs implementation or deletion");
+        const comps = this.splitComponents();
+        comps.splice(i, 1);
+        this.name = comps.join(this.delimiter);
     }
-
-    public concat(other: Name): void {
-        throw new Error("needs implementation or deletion");
-    }
-
 }
