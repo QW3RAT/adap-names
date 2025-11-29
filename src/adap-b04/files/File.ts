@@ -1,6 +1,6 @@
 import { Node } from "./Node";
 import { Directory } from "./Directory";
-import { MethodFailedException } from "../common/MethodFailedException";
+import { IllegalArgumentException } from "../common/IllegalArgumentException";
 
 enum FileState {
     OPEN,
@@ -17,20 +17,37 @@ export class File extends Node {
     }
 
     public open(): void {
-        // do something
+        // Precondition: Can only open if currently closed
+        IllegalArgumentException.assert(
+            this.state === FileState.CLOSED, 
+            "Precondition failed: Cannot open file. Current state is not CLOSED."
+        );
+        
+        this.state = FileState.OPEN;
     }
 
     public read(noBytes: number): Int8Array {
-        // read something
-        return new Int8Array();
+        // Precondition: Can only read if open
+        IllegalArgumentException.assert(
+            this.state === FileState.OPEN,
+            "Precondition failed: Cannot read file. Current state is not OPEN."
+        );
+        
+        // Mock implementation
+        return new Int8Array(noBytes);
     }
 
     public close(): void {
-        // do something
+        // Precondition: Can only close if open
+        IllegalArgumentException.assert(
+            this.state === FileState.OPEN,
+            "Precondition failed: Cannot close file. Current state is not OPEN."
+        );
+
+        this.state = FileState.CLOSED;
     }
 
     protected doGetFileState(): FileState {
         return this.state;
     }
-
 }
