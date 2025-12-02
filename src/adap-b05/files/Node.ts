@@ -1,6 +1,5 @@
 import { IllegalArgumentException } from "../common/IllegalArgumentException";
 import { InvalidStateException } from "../common/InvalidStateException";
-
 import { Name } from "../names/Name";
 import { Directory } from "./Directory";
 
@@ -11,16 +10,18 @@ export class Node {
 
     constructor(bn: string, pn: Directory) {
         this.doSetBaseName(bn);
-        this.parentNode = pn; // why oh why do I have to set this
+        this.parentNode = pn; 
         this.initialize(pn);
     }
 
     protected initialize(pn: Directory): void {
+        IllegalArgumentException.assert(pn !== null && pn !== undefined, "Node initialize: Parent directory cannot be null");
         this.parentNode = pn;
         this.parentNode.addChildNode(this);
     }
 
     public move(to: Directory): void {
+        IllegalArgumentException.assert(to !== null && to !== undefined, "move: Target directory cannot be null");
         this.parentNode.removeChildNode(this);
         to.addChildNode(this);
         this.parentNode = to;
@@ -33,7 +34,13 @@ export class Node {
     }
 
     public getBaseName(): string {
-        return this.doGetBaseName();
+        const bn = this.doGetBaseName();
+        
+        if (this.parentNode && this.parentNode !== (this as any)) {
+             InvalidStateException.assert(bn !== "", "Invalid state: Node name cannot be empty");
+        }
+        
+        return bn;
     }
 
     protected doGetBaseName(): string {
@@ -41,6 +48,7 @@ export class Node {
     }
 
     public rename(bn: string): void {
+        IllegalArgumentException.assert(bn !== null && bn !== undefined, "rename: Name cannot be null");
         this.doSetBaseName(bn);
     }
 
@@ -57,7 +65,11 @@ export class Node {
      * @param bn basename of node being searched for
      */
     public findNodes(bn: string): Set<Node> {
-        throw new Error("needs implementation or deletion");
+        const result = new Set<Node>();
+        if (this.getBaseName() === bn) {
+            result.add(this);
+        }
+        return result;
     }
 
 }

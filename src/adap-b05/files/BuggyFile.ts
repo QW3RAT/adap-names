@@ -12,7 +12,7 @@ export class BuggyFile extends File {
      * @returns base name, here always ""
      */
     protected doGetBaseName(): string {
-        this.baseName = "";
+        this.baseName = ""; 
         return super.doGetBaseName();
     }
 
